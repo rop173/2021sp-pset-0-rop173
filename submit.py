@@ -8,6 +8,8 @@ from canvasapi.quiz import QuizSubmissionQuestion, QuizSubmission
 from environs import Env
 from git import Repo
 
+# Canvas URL: https://canvas.harvard.edu/courses/81475/assignments/437142
+# From Canvas "id": questions[0].id, "answer": {key: some_func(key) for key in questions[0].answer.keys()})
 
 def get_answers(questions: List[QuizSubmissionQuestion]) -> List[Dict]:
     """Creates answers for Canvas quiz questions"""
@@ -15,7 +17,9 @@ def get_answers(questions: List[QuizSubmissionQuestion]) -> List[Dict]:
     # It should be a list of dicts, one per q, each with an 'id' and 'answer' field
     # The format of the 'answer' field depends on the question type
     # You are responsible for collating questions with the functions to call - do not hard code
-    raise NotImplementedError()
+#    raise NotImplementedError()
+    # Question 1 - <p id="seq">What are the last 8 digits of the following sequences?
+    # The answer key is of the form <code>"_".join([seq_name, *initial, arg])</code>.</p>
     # eg {"id": questions[0].id, "answer": {key: some_func(key) for key in questions[0].answer.keys()}}
 
 

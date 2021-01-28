@@ -104,6 +104,8 @@ class PyramidTests(TestCase):
     def test_pyramid_two(self):
         self._assert_expected(2, "-=-\n" + "===\n")
 
+    def test_pyramid_five(self):
+        self._assert_expected(5, "----=----\n---===---\n--=====--\n-=======-\n=========\n")
 
 if __name__ == "__main__":
     main()

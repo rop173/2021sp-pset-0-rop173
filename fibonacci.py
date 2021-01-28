@@ -8,19 +8,33 @@ def last_8(some_int):
     :rtype: int
     """
 
-    raise NotImplementedError()
+    return some_int[:8]
 
 
 def optimized_fibonacci(f):
-    raise NotImplementedError()
+    f1 = 0
+    f2 = 1
+    if f < 0:
+        raise NotImplementedError("Called with zero or negative values rows={}".format(f))
+    elif f == 0:
+        f2 = f1
+    elif f == 1:
+        f2 = f2
+    else:
+        for i in range(2, f + 1):
+            f3 = f1 + f2           # 0 + 1 for the first time
+            f1 = f2
+            f2 = f3
+    return f2
 
 
 class SummableSequence(object):
     def __init__(self, *initial):
-        raise NotImplementedError()
+        self.initial = [0, 1]
+        print(object)
 
     def __call__(self, i):
-        raise NotImplementedError()
+        return self.initial[i] + self.initial[i-1]
 
 
 if __name__ == "__main__":
