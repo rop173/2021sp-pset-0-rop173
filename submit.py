@@ -7,6 +7,7 @@ from canvasapi import Canvas
 from canvasapi.quiz import QuizSubmissionQuestion, QuizSubmission
 from environs import Env
 from git import Repo
+import hashlib
 
 from fibonacci import SummableSequence, last_8, optimized_fibonacci
 from pyramid import print_pyramid
