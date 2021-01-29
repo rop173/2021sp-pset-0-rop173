@@ -8,6 +8,9 @@ from canvasapi.quiz import QuizSubmissionQuestion, QuizSubmission
 from environs import Env
 from git import Repo
 
+from fibonacci import SummableSequence, last_8, optimized_fibonacci
+from pyramid import print_pyramid
+
 
 def get_answers(questions: List[QuizSubmissionQuestion]) -> List[Dict]:
     """Creates answers for Canvas quiz questions"""
