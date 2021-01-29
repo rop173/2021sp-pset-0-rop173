@@ -1,4 +1,3 @@
-import hashlib
 import json
 import os
 from pprint import pprint
@@ -9,22 +8,6 @@ from canvasapi.quiz import QuizSubmissionQuestion, QuizSubmission
 from environs import Env
 from git import Repo
 
-from fibonacci import SummableSequence, optimized_fibonacci
-from pyramid import print_pyramid
-
-
-# Canvas URL: https://canvas.harvard.edu/courses/81475/assignments/437142
-# From Canvas "id": questions[0].id, "answer": {key: some_func(key) for key in questions[0].answer.keys()})
-def set_anwers((questions: List[QuizSubmissionQuestion]) -> List[Dict]:
-    ans0=dict(last_8(optimized_fibonacci(100000)),
-              last_8(optimized_fibonacci(234202)),
-              last_8(SummableSequence(0, 1)(100000)),
-              last_8(SummableSequence(5, 7, 11)(100000)),
-              last_8(SummableSequence(5, 98, 7, 35, 2)(603)),
-              last_8(SummableSequence(5, 7, 11)(100000)))
-    ans1=dict('pyramid_24', print(hashlib.sha256(print_pyramid(24).encode()).hexdigest()[:8])
-      , 'pyramid_53', print(hashlib.sha256(print_pyramid(53).encode()).hexdigest()[:8]))
-    ans2=hashlib.sha256(print_pyramid(53).encode()).hexdigest()[:8]
 
 def get_answers(questions: List[QuizSubmissionQuestion]) -> List[Dict]:
     """Creates answers for Canvas quiz questions"""
@@ -32,100 +15,109 @@ def get_answers(questions: List[QuizSubmissionQuestion]) -> List[Dict]:
     # It should be a list of dicts, one per q, each with an 'id' and 'answer' field
     # The format of the 'answer' field depends on the question type
     # You are responsible for collating questions with the functions to call - do not hard code
-    #    raise NotImplementedError()
-    answer
-    {"id": questions[0].id, "answer": {key: some_func(key) for key in questions[0].answer.keys()}}
-    # return (questions[0].id, questions[0].answer.keys())
-    # Question 1 - <p id="seq">What are the last 8 digits of the following sequences?
-    # The answer key is of the form <code>"_".join([seq_name, *initial, arg])</code>.</p>
+    myAns = []
+    myAns.append({
+        "answer": dict('fib_100000': last_8(optimized_fibonacci(100000)),
+                       'fib_234202':  last_8(optimized_fibonacci(234202)),
+                       'summable_0_1_100000':l ast_8(SummableSequence(0, 1)(100000)),
+                       'summable_5_7_11_100000': last_8(SummableSequence(5, 7, 11)(100000)),
+                       'summable_5_98_7_35_2_603': last_8(SummableSequence(5, 98, 7, 35, 2)(603)),
+                       'summable_8_9_99_141515': last_8(SummableSequence(5, 7, 11)(100000)))
+    })
+
+
+    return myAns
     # eg {"id": questions[0].id, "answer": {key: some_func(key) for key in questions[0].answer.keys()}}
 
-    def get_submission_comments(repo: Repo, qsubmission: QuizSubmission) -> Dict:
-        """Get some info about this submission"""
-        return dict(
-            hexsha=repo.head.commit.hexsha[:8],
-            submitted_from=repo.remotes.origin.url,
-            dt=repo.head.commit.committed_datetime.isoformat(),
-            branch=os.environ.get("TRAVIS_BRANCH", None),  # repo.active_branch.name,
-            is_dirty=repo.is_dirty(),
-            quiz_submission_id=qsubmission.id,
-            quiz_attempt=qsubmission.attempt,
-            travis_url=os.environ.get("TRAVIS_BUILD_WEB_URL", None),
+
+def get_submission_comments(repo: Repo, qsubmission: QuizSubmission) -> Dict:
+    """Get some info about this submission"""
+    return dict(
+        hexsha=repo.head.commit.hexsha[:8],
+        submitted_from=repo.remotes.origin.url,
+        dt=repo.head.commit.committed_datetime.isoformat(),
+        branch=os.environ.get("TRAVIS_BRANCH", None),  # repo.active_branch.name,
+        is_dirty=repo.is_dirty(),
+        quiz_submission_id=qsubmission.id,
+        quiz_attempt=qsubmission.attempt,
+        travis_url=os.environ.get("TRAVIS_BUILD_WEB_URL", None),
+    )
+
+
+if __name__ == "__main__":
+
+    repo = Repo(".")
+
+    # Load environment
+    env = Env()
+
+    course_id = env.int("CANVAS_COURSE_ID")
+    assignment_id = env.int("CANVAS_ASSIGNMENT_ID")
+    quiz_id = env.int("CANVAS_QUIZ_ID")
+    as_user_id = env.int("CANVAS_AS_USER_ID", 0)  # Optional - for test student
+
+    if as_user_id:
+        masquerade = dict(as_user_id=as_user_id)
+    else:
+        masquerade = {}
+
+    if repo.is_dirty() and not env.bool("ALLOW_DIRTY", False):
+        raise RuntimeError(
+            "Must submit from a clean working directory - commit your code and rerun"
         )
 
-    if __name__ == "__main__":
+    # Load canvas objects
+    canvas = Canvas(env.str("CANVAS_URL"), env.str("CANVAS_TOKEN"))
+    course = canvas.get_course(course_id, **masquerade)
+    assignment = course.get_assignment(assignment_id, **masquerade)
+    quiz = course.get_quiz(quiz_id, **masquerade)
 
-        repo = Repo(".")
+    # Begin submissions
+    url = "https://github.com/csci-e-29/{}/commit/{}".format(
+        os.path.basename(repo.working_dir), repo.head.commit.hexsha
+    )  # you MUST push to the classroom org, even if CI/CD runs elsewhere (you can push anytime before peer review begins)
 
-        # Load environment
-        env = Env()
-        course_id = env.int("CANVAS_COURSE_ID")
-        assignment_id = env.int("CANVAS_ASSIGNMENT_ID")
-        quiz_id = env.int("CANVAS_QUIZ_ID")
-        as_user_id = env.int("CANVAS_AS_USER_ID", 0)  # Optional - for test student
+    qsubmission = None
+    try:
+        # Attempt quiz submission first - only submit assignment if successful
+        qsubmission = quiz.create_submission(**masquerade)
+        questions = qsubmission.get_submission_questions(**masquerade)
 
-        if as_user_id:
-            masquerade = dict(as_user_id=as_user_id)
-        else:
-            masquerade = {}
+        # Get some basic info to help develop
+        for q in questions:
+            print("{} - {}".format(q.question_name, q.question_text.split("\n", 1)[0]))
 
-        if repo.is_dirty() and not env.bool("ALLOW_DIRTY", False):
-            raise RuntimeError(
-                "Must submit from a clean working directory - commit your code and rerun"
+            # MC and some q's have 'answers' not 'answer'
+            pprint(
+                {
+                    k: getattr(q, k, None)
+                    for k in ["question_type", "id", "answer", "answers"]
+                }
             )
 
-        # Load canvas objects
-        canvas = Canvas(env.str("CANVAS_URL"), env.str("CANVAS_TOKEN"))
-        course = canvas.get_course(course_id, **masquerade)
-        assignment = course.get_assignment(assignment_id, **masquerade)
-        quiz = course.get_quiz(quiz_id, **masquerade)
+            print()
 
-        # Begin submissions
-        url = "https://github.com/csci-e-29/{}/commit/{}".format(
-            os.path.basename(repo.working_dir), repo.head.commit.hexsha
-        )  # you MUST push to the classroom org, even if CI/CD runs elsewhere (you can push anytime before peer review begins)
+        # Submit your answers
+        answers = get_answers(questions)
+        pprint(answers)
+        responses = qsubmission.answer_submission_questions(
+            quiz_questions=answers, **masquerade
+        )
 
-        qsubmission = None
-        try:
-            # Attempt quiz submission first - only submit assignment if successful
-            qsubmission = quiz.create_submission(**masquerade)
-            questions = qsubmission.get_submission_questions(**masquerade)
+    finally:
+        if qsubmission is not None:
+            completed = qsubmission.complete(**masquerade)
 
-            # Get some basic info to help develop
-            for q in questions:
-                print("{} - {}".format(q.question_name, q.question_text.split("\n", 1)[0]))
-
-                # MC and some q's have 'answers' not 'answer'
-                pprint(
-                    {
-                        k: getattr(q, k, None)
-                        for k in ["question_type", "id", "answer", "answers"]
-                    }
-                )
-
-                print()
-
-            # Submit your answers
-            answers = get_answers(questions)
-            pprint(answers)
-            responses = qsubmission.answer_submission_questions(
-                quiz_questions=answers, **masquerade
+            # Only submit assignment if quiz finished successfully
+            submission = assignment.submit(
+                dict(
+                    submission_type="online_url",
+                    url=url,
+                ),
+                comment=dict(
+                    text_comment=json.dumps(get_submission_comments(repo, qsubmission))
+                ),
+                **masquerade,
             )
 
-        finally:
-            if qsubmission is not None:
-                completed = qsubmission.complete(**masquerade)
-
-                # Only submit assignment if quiz finished successfully
-                submission = assignment.submit(
-                    dict(
-                        submission_type="online_url",
-                        url=url,
-                    ),
-                    comment=dict(
-                        text_comment=json.dumps(get_submission_comments(repo, qsubmission))
-                    ),
-                    **masquerade,
-                )
-
-        pass
+    pass
