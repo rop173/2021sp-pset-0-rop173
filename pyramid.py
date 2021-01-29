@@ -19,7 +19,7 @@ def print_pyramid(rows):
 
     :param int rows: total height
     """
-#    raise NotImplementedError("Called with rows={}".format(rows))
+    #    raise NotImplementedError("Called with rows={}".format(rows))
     x = ""
     y = "="
     z = ""
@@ -28,14 +28,15 @@ def print_pyramid(rows):
     elif rows == 0:
         print("Called with zero rows nothing to display")
     else:
-        for m in list(range(0,rows-1)):
+        for m in list(range(0, rows - 1)):
             x += "-"
-        for n in list(range(0,rows)):
-            z = z + x[n:]+y+x[n:]
-            if n < rows-1:
+        for n in list(range(0, rows)):
+            z = z + x[n:] + y + x[n:]
+            if n < rows - 1:
                 z = z + "\n"
             y += "=="
-    print(z)
+    return z
+
 
 if __name__ == "__main__":
     parser = ArgumentParser(
