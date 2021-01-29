@@ -17,20 +17,19 @@ def get_answers(questions: List[QuizSubmissionQuestion]) -> List[Dict]:
     # You are responsible for collating questions with the functions to call - do not hard code
     myAns = []
     myAns.append({
-        "answer": dict('fib_100000': last_8(optimized_fibonacci(100000)),
-                       'fib_234202':  last_8(optimized_fibonacci(234202)),
-                       'summable_0_1_100000':l ast_8(SummableSequence(0, 1)(100000)),
+        "answer": {'fib_100000': last_8(optimized_fibonacci(100000)),
+                       'fib_234202': last_8(optimized_fibonacci(234202)),
+                       'summable_0_1_100000': last_8(SummableSequence(0, 1)(100000)),
                        'summable_5_7_11_100000': last_8(SummableSequence(5, 7, 11)(100000)),
                        'summable_5_98_7_35_2_603': last_8(SummableSequence(5, 98, 7, 35, 2)(603)),
-                       'summable_8_9_99_141515': last_8(SummableSequence(5, 7, 11)(100000)))
+                       'summable_8_9_99_141515': last_8(SummableSequence(5, 7, 11)(100000))}
     })
     myAns.append({
-        {'answer': {'pyramid_24': hashlib.sha256(print_pyramid(24).encode()).hexdigest()[:8],
-                    'pyramid_53': hashlib.sha256(print_pyramid(53).encode()).hexdigest()[:8]},
-
+        'answer': {'pyramid_24': hashlib.sha256(print_pyramid(24).encode()).hexdigest()[:8],
+                    'pyramid_53': hashlib.sha256(print_pyramid(53).encode()).hexdigest()[:8]}
          })
     myAns.append({
-        {'answer': 8610,})
+        'answer': 8610})
     return myAns
     # eg {"id": questions[0].id, "answer": {key: some_func(key) for key in questions[0].answer.keys()}}
 
