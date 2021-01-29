@@ -24,8 +24,13 @@ def get_answers(questions: List[QuizSubmissionQuestion]) -> List[Dict]:
                        'summable_5_98_7_35_2_603': last_8(SummableSequence(5, 98, 7, 35, 2)(603)),
                        'summable_8_9_99_141515': last_8(SummableSequence(5, 7, 11)(100000)))
     })
+    myAns.append({
+        {'answer': {'pyramid_24': hashlib.sha256(print_pyramid(24).encode()).hexdigest()[:8],
+                    'pyramid_53': hashlib.sha256(print_pyramid(53).encode()).hexdigest()[:8]},
 
-
+         })
+    myAns.append({
+        {'answer': 8610,})
     return myAns
     # eg {"id": questions[0].id, "answer": {key: some_func(key) for key in questions[0].answer.keys()}}
 
