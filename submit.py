@@ -21,9 +21,8 @@ def get_answers(questions: List[QuizSubmissionQuestion]) -> List[Dict]:
     # You are responsible for collating questions with the functions to call - do not hard code
 
     # Get some basic info to help develop
-#    re.sub(re.compile(" 'fib_100000' : none", re.S), r'\1%\2', text)
     [
-        {'answer': {  last_8(optimized_fibonacci(100000)),
+        {'answer': {last_8(optimized_fibonacci(100000)),
                       last_8(optimized_fibonacci(234202)),
                       last_8(SummableSequence(0, 1)(100000)),
                       last_8(SummableSequence(5, 7, 11)(100000)),
@@ -31,7 +30,7 @@ def get_answers(questions: List[QuizSubmissionQuestion]) -> List[Dict]:
                       last_8(SummableSequence(5, 7, 11)(100000))}},
             {'answer': {  hashlib.sha256(print_pyramid(24).encode()).hexdigest()[:8],
                     hashlib.sha256(print_pyramid(53).encode()).hexdigest()[:8]},},
-                {'id': 2477713, 'answers':  568, 'answers':  568}
+                {'id': 2477713, 'answer':  568, 'answers':  568}
     ]
     # eg {"id": questions[0].id, "answer": {key: some_func(key) for key in questions[0].answer.keys()}}
 
@@ -89,7 +88,7 @@ if __name__ == "__main__":
         qsubmission = quiz.create_submission(**masquerade)
         questions = qsubmission.get_submission_questions(**masquerade)
 
-        # Get some basic info to help develop
+        # Get some basic info to helpquestions[0].id develop
         for q in questions:
             print("{} - {}".format(q.question_name, q.question_text.split("\n", 1)[0]))
 
